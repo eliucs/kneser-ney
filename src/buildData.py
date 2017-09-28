@@ -136,7 +136,7 @@ def main():
     pickle.dump(wordFreqDist, wordFreqDistFile)
     wordFreqDistFile.close()
 
-    bigramFreqDistFile = open('data/bigram-freq-dist/bigramFreqDistFile.pkl', 'wb')
+    bigramFreqDistFile = open('data/bigram-freq-dist/bigramFreqDist.pkl', 'wb')
     pickle.dump(bigramFreqDist, bigramFreqDistFile)
     bigramFreqDistFile.close()
 

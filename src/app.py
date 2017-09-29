@@ -13,14 +13,14 @@ from PyQt5.QtWidgets import QApplication, QTextEdit, QWidget, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QLabel
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
-from src.kneserNey import KneserNey
+from kneserNey import KneserNey
 
 
 class App(QWidget):
 
     def __init__(self):
         super(App, self).__init__()
-        with open(os.path.abspath('data/bigram-prob-dist/bigramProbDist.pkl'),
+        with open(os.path.abspath('src/data/bigram-prob-dist/bigramProbDist.pkl'),
                   'rb') as file:
             self.bigramProbDist = pickle.load(file)
         self.initUI()
@@ -57,6 +57,11 @@ class App(QWidget):
         self.setLayout(self.mainLayout)
         self.setWindowTitle('Kneser-Ney Word Prediction')
 
+
+    def clearTextArea(self):
+        self.textArea.clear()
+
+
     def onTextChange(self):
         text = self.textArea.toPlainText()
         lastToken = self.getLastToken(text)
@@ -82,6 +87,7 @@ class App(QWidget):
             suggestionPercent.setFont(self.bodyFont)
             self.suggestionLayout.addWidget(suggestionLabel, 0, i)
             self.suggestionLayout.addWidget(suggestionPercent, 1, i)
+
 
     def getLastToken(self, text):
         if not text:

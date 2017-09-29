@@ -13,10 +13,11 @@
 """
 
 
+import os
 import pickle
 from nltk import sent_tokenize
 from nltk.corpus import reuters, brown, webtext, inaugural
-from src.utils import *
+from utils import *
 
 
 START_TOKEN = '<START>'
@@ -183,7 +184,7 @@ def main():
     print('  Num Words: ', bigramFreqDist[NUM_WORDS])
     print('Num Bigrams: ', bigramFreqDist[NUM_BIGRAMS])
 
-    bigramFreqDistFile = open('data/bigram-freq-dist/bigramFreqDist.pkl', 'wb')
+    bigramFreqDistFile = open(os.path.abspath('data/bigram-freq-dist/bigramFreqDist.pkl'), 'wb')
     pickle.dump(bigramFreqDist, bigramFreqDistFile)
     bigramFreqDistFile.close()
 

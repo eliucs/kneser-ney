@@ -10,7 +10,7 @@
 
 import os
 import pickle
-from src.kneserNey import KneserNey
+from kneserNey import KneserNey
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
         except TypeError:
             continue
 
-    bigramProbDistFile = open('data/bigram-prob-dist/bigramProbDist.pkl', 'wb')
+    bigramProbDistFile = open(os.path.abspath('data/bigram-prob-dist/bigramProbDist.pkl'), 'wb')
     pickle.dump(bigramProbDist, bigramProbDistFile)
     bigramProbDistFile.close()
 

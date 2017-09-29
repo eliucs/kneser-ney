@@ -6,16 +6,21 @@
 
 """
 
-
+import pickle
+import os
 import sys
 from PyQt5.QtWidgets import QApplication, QTextEdit, QWidget, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QLabel
+from kneserNey import KneserNey
 
 
 class App(QWidget):
 
     def __init__(self):
         super(App, self).__init__()
+        with open(os.path.abspath('data/bigram-freq-dist/bigramFreqDist.pkl'), 'rb') as file:
+            bigramFreqDist = pickle.load(file)
+            self.kneserNey = KneserNey(bigramFreqDist, 0.75)
         self.initUI()
 
     def initUI(self):
@@ -26,11 +31,10 @@ class App(QWidget):
         titleLayout.addWidget(mainTitle)
         titleLayout.setContentsMargins(0, 0, 0, 20)
 
-        suggestionLayout = QGridLayout()
-        for i in range(5):
-            suggestionLayout.addWidget(QLabel('Test ' + str(i)), 0, i)
-            suggestionLayout.addWidget(QLabel('Test %'), 1, i)
-        suggestionLayout.setContentsMargins(0, 0, 0, 20)
+        self.suggestionLayout = QGridLayout()
+        self.suggestionsLabel = []
+        self.suggestionsPercentage = []
+        self.suggestionLayout.setContentsMargins(0, 0, 0, 20)
 
         self.textArea = QTextEdit()
         self.btnClear = QPushButton('Clear Text Area')
@@ -41,7 +45,7 @@ class App(QWidget):
 
         # Add all widgets and layouts to mainLayout:
         mainLayout.addLayout(titleLayout)
-        mainLayout.addLayout(suggestionLayout)
+        mainLayout.addLayout(self.suggestionLayout)
         mainLayout.addWidget(self.textArea)
         mainLayout.addWidget(self.btnClear)
 
@@ -58,13 +62,26 @@ class App(QWidget):
         if not lastToken:
             return
 
-        print(lastToken)
+        probabilityDist = self.kneserNey.predictNextWord(lastToken)
+
+        if not probabilityDist:
+            return
+
+        # Remove original suggestions:
+        for i in reversed(range(self.suggestionLayout.count())):
+            self.suggestionLayout.itemAt(i).widget().setParent(None)
+
+        # Add new suggestions:
+        for i in range(len(probabilityDist)):
+            self.suggestionLayout.addWidget(QLabel(probabilityDist[i][0]), 0, i)
+            self.suggestionLayout.addWidget(QLabel('{0:.2f}'.format(probabilityDist[i][1] * 100)), 1, i)
 
 
     def getLastToken(self, text):
         if not text:
             return None
-        return text.strip().split()[-1]
+        return text.rsplit(None, 1)[-1]
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

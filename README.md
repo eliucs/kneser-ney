@@ -12,6 +12,19 @@ of the most probable continuing words are suggested at the top. Only bigrams
 are considered, although Kneser-Ney could be extended to n-grams with a
 recursive Kneser-Ney formula.
 
+<table align="center">
+    <tr>
+        <td>
+          <img src="https://media.giphy.com/media/3o7aD5GEO41OvJsdIk/giphy.gif" width="400px"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+          For example, this was trained on the NLTK Reuters corpora.
+        </td>
+    </tr>
+</table>
+
 ### Starting Up:
 
 ```

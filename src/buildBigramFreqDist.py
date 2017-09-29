@@ -176,7 +176,7 @@ def processBrownCorpora():
 
 def main():
 
-    processCorpora(inaugural)
+    processCorpora(reuters)
 
     for key in list(bigramFreqDist.keys())[:5]:
         print(key, bigramFreqDist[key])

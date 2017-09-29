@@ -3,27 +3,28 @@
     buildBigramFreqDist.py
 
     This module is used for building up the word and bigram frequency
-    distribution dictionaries from the following NLTK corpora:
+    distribution dictionaries, with the option of the following NLTK
+    corpora:
         - Reuters
         - Brown
         - Webtext
-        - Inaugural Address
+        - Inaugural
 
 """
 
 
 import pickle
 from nltk import sent_tokenize
-from nltk.corpus import brown, reuters, inaugural, webtext
-from utils import *
+from nltk.corpus import reuters, brown, webtext, inaugural
+from src.utils import *
 
 
 START_TOKEN = '<START>'
 END_TOKEN = '<END>'
 NUM_WORDS = '<NUM_WORDS>'
 NUM_BIGRAMS = '<NUM_BIGRAMS>'
-FILTERS = ['<', '>', '&lt;', '(', ')', ',', '"', ':', '\t', '--', '*',
-           '!', '?', '/ul', '\\r']
+FILTERS = ['<', '>', '(', ')', '[', ']', '&lt;', ':', ';', '-', '--', '*',
+           '!', '?', '.', '\t', '\n', '\r', ',', '/', '"']
 FILTERS_SINGLE_SYMBOL = ['<', '>', '(', ')', ',', '"', ':', '.', '`', '``',
                          "'", '.', '?', '!', "''", '-', '--', '---', ';']
 
@@ -61,8 +62,6 @@ def processCorpora(corpora):
             for w in s.split(' '):
                 if not w:
                     continue
-                elif isNumber(w):
-                    continue
                 elif w.endswith('.'):
                     w = w[:-1]
                 for ft in FILTERS:
@@ -72,6 +71,14 @@ def processCorpora(corpora):
                 # down to the null string:
                 if not w:
                     continue
+
+                if isNumber(w):
+                    continue
+
+                if '-' in w:
+                    continue
+
+                # print(w)
 
                 words.append(w)
 
@@ -168,9 +175,7 @@ def processBrownCorpora():
 
 def main():
 
-    for corpora in [reuters, webtext, inaugural]:
-        processCorpora(corpora)
-    processBrownCorpora()
+    processCorpora(inaugural)
 
     for key in list(bigramFreqDist.keys())[:5]:
         print(key, bigramFreqDist[key])

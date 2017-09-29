@@ -11,29 +11,34 @@ import os
 import sys
 from PyQt5.QtWidgets import QApplication, QTextEdit, QWidget, QPushButton, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QLabel
-from kneserNey import KneserNey
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
+from src.kneserNey import KneserNey
 
 
 class App(QWidget):
 
     def __init__(self):
         super(App, self).__init__()
-        with open(os.path.abspath('data/bigram-freq-dist/bigramFreqDist.pkl'), 'rb') as file:
-            bigramFreqDist = pickle.load(file)
-            self.kneserNey = KneserNey(bigramFreqDist, 0.75)
+        with open(os.path.abspath('data/bigram-prob-dist/bigramProbDist.pkl'),
+                  'rb') as file:
+            self.bigramProbDist = pickle.load(file)
         self.initUI()
 
     def initUI(self):
-        mainLayout = QVBoxLayout()
+        self.mainLayout = QVBoxLayout()
+
+        self.titleFont = QFont('Helvetica Neue', 20)
+        self.bodyFont = QFont('Helvetica Neue', 12)
 
         titleLayout = QHBoxLayout()
         mainTitle = QLabel('Auto Word Suggestion')
+        mainTitle.setFont(self.titleFont)
+        mainTitle.setAlignment(Qt.AlignCenter)
         titleLayout.addWidget(mainTitle)
         titleLayout.setContentsMargins(0, 0, 0, 20)
 
         self.suggestionLayout = QGridLayout()
-        self.suggestionsLabel = []
-        self.suggestionsPercentage = []
         self.suggestionLayout.setContentsMargins(0, 0, 0, 20)
 
         self.textArea = QTextEdit()
@@ -44,16 +49,13 @@ class App(QWidget):
         self.textArea.textChanged.connect(self.onTextChange)
 
         # Add all widgets and layouts to mainLayout:
-        mainLayout.addLayout(titleLayout)
-        mainLayout.addLayout(self.suggestionLayout)
-        mainLayout.addWidget(self.textArea)
-        mainLayout.addWidget(self.btnClear)
+        self.mainLayout.addLayout(titleLayout)
+        self.mainLayout.addLayout(self.suggestionLayout)
+        self.mainLayout.addWidget(self.textArea)
+        self.mainLayout.addWidget(self.btnClear)
 
-        self.setLayout(mainLayout)
+        self.setLayout(self.mainLayout)
         self.setWindowTitle('Kneser-Ney Word Prediction')
-
-    def clearTextArea(self):
-        self.textArea.clear()
 
     def onTextChange(self):
         text = self.textArea.toPlainText()
@@ -62,7 +64,7 @@ class App(QWidget):
         if not lastToken:
             return
 
-        probabilityDist = self.kneserNey.predictNextWord(lastToken)
+        probabilityDist = self.bigramProbDist.get(lastToken, [])
 
         if not probabilityDist:
             return
@@ -73,9 +75,13 @@ class App(QWidget):
 
         # Add new suggestions:
         for i in range(len(probabilityDist)):
-            self.suggestionLayout.addWidget(QLabel(probabilityDist[i][0]), 0, i)
-            self.suggestionLayout.addWidget(QLabel('{0:.2f}'.format(probabilityDist[i][1] * 100)), 1, i)
-
+            suggestionLabel = QLabel(probabilityDist[i][0])
+            suggestionPercent = QLabel('{0:.2f}'
+                .format(probabilityDist[i][1] * 100) + '%')
+            suggestionLabel.setFont(self.bodyFont)
+            suggestionPercent.setFont(self.bodyFont)
+            self.suggestionLayout.addWidget(suggestionLabel, 0, i)
+            self.suggestionLayout.addWidget(suggestionPercent, 1, i)
 
     def getLastToken(self, text):
         if not text:

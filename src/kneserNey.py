@@ -2,7 +2,8 @@
 
     kneserNey.py
 
-    This module is for the Kneser-Ney Smoothing algorithm.
+    This module is for the Kneser-Ney smoothing algorithm with
+    absolute-discounting interpolation for bigram prediction.
 
 """
 

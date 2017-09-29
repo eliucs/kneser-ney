@@ -2,7 +2,10 @@
 
     utils.py
 
+    This module is for general utility/helper functions.
+
 """
+
 
 def isNumber(s):
     try:
@@ -10,6 +13,7 @@ def isNumber(s):
         return True
     except ValueError:
         return False
+
 
 def log(statusText, status, text):
     if (status == 0):
